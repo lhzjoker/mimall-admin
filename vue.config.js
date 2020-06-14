@@ -24,12 +24,22 @@ module.exports = {
    * In most cases please use '/' !!!
    * Detail: https://cli.vuejs.org/config/#publicpath
    */
+  lintOnSave: false,
   publicPath: '/',
   outputDir: 'dist',
   assetsDir: 'static',
   lintOnSave: process.env.NODE_ENV === 'development',
   productionSourceMap: false,
   devServer: {
+    proxy: {
+      [process.env.VUE_APP_BASE_API]: {
+        target: 'http://mi.lhz520.top:8080',    //目标服务器 host
+        changeOrigin: true,     //默认false，是否需要改变原始主机头为目标URL
+        pathRewrite: {
+          ['^' + process.env.VUE_APP_BASE_API]: ''     // 重写请求，比如我们源访问的是/api，那么请求会被解析为空
+        },
+      }
+    },
     port: port,
     open: true,
     overlay: {
@@ -87,7 +97,7 @@ module.exports = {
             .plugin('ScriptExtHtmlWebpackPlugin')
             .after('html')
             .use('script-ext-html-webpack-plugin', [{
-            // `runtime` must same as runtimeChunk name. default is `runtime`
+              // `runtime` must same as runtimeChunk name. default is `runtime`
               inline: /runtime\..*\.js$/
             }])
             .end()
